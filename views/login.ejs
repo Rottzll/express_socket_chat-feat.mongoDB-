@@ -1,0 +1,17 @@
+<html>
+    <div style="text-align: center; color:red; margin-top: 2%">
+    <!--만약 message의 길이가 0보다 길면 message를 띄워라-->
+        <p><% if((message.length) > 0) { %>
+            <%= message %>
+            <% } %>
+        </p>
+    </div>
+</html>
+    <form action="/login" method="POST" class="signupform">
+        <label for="id">ID</label>
+        <input name="id" type="text" required />
+        <label for="password">PASSWORD</label>
+        <input name="password" type="password" required />
+        <button class="btn">LOGIN!</button>
+    </form>
+ 
