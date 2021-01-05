@@ -13,6 +13,7 @@ router.get("/login", (req, res) => res.render("login", {page: "login", message:r
 router.get("/signup", (req, res) => res.render("signup", {page: "signup"}));
 router.get('/logout', function (req, res) {
     req.logout();
+    user_name = "";
     res.redirect('/'); //로그아웃 후 '/'로 이동
 });
 
@@ -70,6 +71,7 @@ function (req, id, password, done)
         } else if (!user) {
             return done(null, false, req.flash('login_message','아이디 또는 비밀번호를 확인하세요.')); // 로그인 실패
         } else {
+            user_name = user.name;
             return done(null, user); // 로그인 성공
         }
     });
@@ -79,7 +81,7 @@ function (req, id, password, done)
 
 router.post('/login', passport.authenticate('local', {failureRedirect: '/login', failureFlash: true}), // 인증 실패 시 '/login'으로 이동
     function (req, res) {
-       
+        
         res.send('<script type="text/javascript">alert("로그인 성공"); window.location="/"; </script>');
         //로그인 성공 시 '/'으로 이동
     });
