@@ -2,21 +2,28 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const mongoose = require("mongoose");
-const crypto = require("crypto");
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
+const crypto = require("crypto");
+var user_name = "";
 
-router.get('/', (req, res) => res.render('index'));
-router.get("/login", (req, res) => res.render("login", {page: "login"}));
+
+router.get('/', (req, res) => res.render('index', {name : user_name}));
+router.get("/login", (req, res) => res.render("login", {page: "login", message:req.flash('login_message')}));
 router.get("/signup", (req, res) => res.render("signup", {page: "signup"}));
+router.get('/logout', function (req, res) {
+    req.logout();
+    res.redirect('/'); //로그아웃 후 '/'로 이동
+});
 
 router.post("/signup", (req, res, next) => {
     console.log(req.body);
+    
     User.find({ id:req.body.id })
         .exec()
         .then(user => {
             if (user.length >= 1) {
-                res.send('<script type="text/javascript">alert("이미 존재하는 id입니다."); window.location="/signup"; </script>');
+                res.send('<script type="text/javascript">alert("이미 존재하는 아이디입니다."); window.location="/signup"; </script>');
             } else {
                 const user = new User({
                     _id: new mongoose.Types.ObjectId(),
@@ -37,7 +44,10 @@ router.post("/signup", (req, res, next) => {
         });
 });
 
-//로그인에 성공할 시 serializeUser 메서드를 통해서 사용자 정보를 세션에 저장
+
+
+
+//로그인에 성공할 시 사용자 정보를 세션에 저장
 passport.serializeUser(function (user, done) {
     done(null, user);
 });
@@ -66,7 +76,13 @@ function (req, id, password, done)
 }
 ));
 
-router.post('/login', passport.authenticate('local', {failureRedirect: '/login', failureFlash: true})); // 인증 실패 시 '/login'으로 이동
-router.get("/login", (req, res) => res.render('login', {message: req.flash('login_message')}));
+
+router.post('/login', passport.authenticate('local', {failureRedirect: '/login', failureFlash: true}), // 인증 실패 시 '/login'으로 이동
+    function (req, res) {
+       
+        res.send('<script type="text/javascript">alert("로그인 성공"); window.location="/"; </script>');
+        //로그인 성공 시 '/'으로 이동
+    });
+
 
 module.exports = router;
