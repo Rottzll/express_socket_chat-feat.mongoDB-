@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const PORT= process.env.PORT || 3000;
 const bodyParser = require("body-parser");
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
@@ -15,9 +14,6 @@ const indexRoute      = require("./routes/index");
 //DB
 let url = "mongodb://localhost:27017/SJ";
 mongoose.connect(url,{useNewUrlParser: true});
-
-
-
 
 app.use(bodyParser.urlencoded({extended: true}));
 

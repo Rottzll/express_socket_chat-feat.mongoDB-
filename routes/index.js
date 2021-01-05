@@ -66,7 +66,6 @@ function (req, id, password, done)
 }
 ));
 
-
 router.post('/login', passport.authenticate('local', {failureRedirect: '/login', failureFlash: true})); // 인증 실패 시 '/login'으로 이동
 router.get("/login", (req, res) => res.render('login', {message: req.flash('login_message')}));
 
