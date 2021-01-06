@@ -5,11 +5,12 @@ const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const Session = require('express-session');
+const session = require('express-session');
 const flash = require('connect-flash');
+
 // routes
 const indexRoute      = require("./routes/index");
-
+var chat = require('./routes/chat');
 
 //DB
 let url = "mongodb://localhost:27017/SJ";
@@ -25,11 +26,9 @@ app.engine('html', require('ejs').renderFile);
 app.use(express.static(__dirname + '/views'));
 
 
-
-app.listen(PORT, function () {
-    console.log('Example app listening on port',PORT);
+var server = app.listen( PORT, function(){
+    console.log('Express listening on port', PORT);
 });
-
 
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -38,25 +37,31 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-var MongoDBStore = require('connect-mongodb-session')(Session);
-//세션
-var store = new MongoDBStore({//세션을 저장할 공간
-    uri: url,//db url
-    collection: 'sessions'//콜렉션 이름
-});
 
-store.on('error', function(error) {//에러처리
-    console.log(error);
-});
+var connectMongo = require('connect-mongo');
+var MongoStore = connectMongo(session);
 
-app.use(Session({
+var seesionMiddleWare = session({
     secret:'SJ', //세션 암호화 key
     resave:false,//세션 재저장 여부
     saveUninitialized:true,
-    rolling:true,//로그인 상태에서 페이지 이동 시마다 세션값 변경 여부
     cookie:{maxAge:1000*60*60},//유효시간
-    store: store
-}));
+    store: new MongoStore({
+        mongooseConnection: mongoose.connection,
+        ttl: 14 * 24 * 60 * 60
+    })
+});
+app.use(seesionMiddleWare)
 
+
+var listen = require('socket.io');
+var io = listen(server);
+//socket io passport 접근하기 위한 미들웨어 적용
+io.use(function(socket, next){
+    sessionMiddleWare(socket.request, socket.request.res, next);
+  });
+require('./libs/socketConnection')(io);
+
+app.use('/chat', chat);
 // use routes
 app.use("/", indexRoute);
