@@ -19,7 +19,10 @@ mongoose.connect(url,{useNewUrlParser: true});
 // 뷰엔진 설정
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
-app.use(express.static(__dirname + "/public"));
+app.engine('html', require('ejs').renderFile);
+
+// 기본 path를 /public으로 설정(css, javascript 등의 파일 사용을 위해)
+app.use(express.static(__dirname + '/views'));
 
 
 

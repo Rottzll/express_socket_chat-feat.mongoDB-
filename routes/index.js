@@ -13,7 +13,7 @@ router.get("/login", (req, res) => res.render("login", {page: "login", message:r
 router.get("/signup", (req, res) => res.render("signup", {page: "signup"}));
 router.get('/logout', function (req, res) {
     req.logout();
-    user_name = "";
+    user_name = ""; // 이름 변수 초기화
     res.redirect('/'); //로그아웃 후 '/'로 이동
 });
 
@@ -45,9 +45,6 @@ router.post("/signup", (req, res, next) => {
         });
 });
 
-
-
-
 //로그인에 성공할 시 사용자 정보를 세션에 저장
 passport.serializeUser(function (user, done) {
     done(null, user);
@@ -71,7 +68,7 @@ function (req, id, password, done)
         } else if (!user) {
             return done(null, false, req.flash('login_message','아이디 또는 비밀번호를 확인하세요.')); // 로그인 실패
         } else {
-            user_name = user.name;
+            user_name = user.name; // 로그인 성공 시 해당 이름 변수 저장
             return done(null, user); // 로그인 성공
         }
     });

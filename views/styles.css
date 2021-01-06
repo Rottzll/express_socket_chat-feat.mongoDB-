@@ -1,0 +1,8 @@
+/* CSS Document */
+body{ overflow-y : scroll; padding: 0; margin : 0; font-family: Roboto; font-size: 16px; color: #555; height: 2000px;}
+
+.popup-position{ display: none; position: absolute; top:0; left: 0; background-color: rgba(0,0,0,0.7); width: 100%; height: 100%;}
+#popup-wrapper{width: 500px; margin: 70px auto; text-align: left; }
+#popup-container{background-color: #777; padding: 20px; border-radius: 4px; }
+
+#wrapper{width: 960px; margin: 40xp auto; text-align: left;}
