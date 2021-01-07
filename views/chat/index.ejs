@@ -39,6 +39,10 @@
         </div><!-- /input-group -->
     </form>  
 </div>
+<div class="user">
+    <input type="button" class="btn" onclick=" location.href='/'" value="exit"/>
+</div>
+
 <style type="text/css">
 .panel-default ul { padding-left:0px; }
 .panel-default ul li { list-style:none; padding-left:0px;}
@@ -49,7 +53,7 @@
     #chatWrap .panel-body { min-height:250px; }
 }
 </style>
-<script src='/socket.io/socket.io.js'></script>  
+<script src="/socket.io/socket.io.js"></script>  
 <script>
     (function(){
        var socket = io();
@@ -63,21 +67,21 @@
             updateUserList(data);
         });
         socket.on('server message', function(data){
-            $('#chatBody').append('<li><strong>'+ data.displayname +'</strong>' + data.message + '</li>');
-        });
-        socket.on('leave', function(data){
-            updateUserList(data);
+            $('#chatBody').append('<li><strong>'+ data.name +'</strong>' + data.message + '</li>');
         });
         $(document).ready(function() {
             $('#sendForm').submit(function(){
-                var $massage = $("#sendForm input [name=message]");
+                var $massage = $('#sendForm input[name=message]');
                 socket.emit('client message', { message : $massage.val()});
                 $massage.val('');
                 return false;
             });
         });
+        socket.on('leave', function(data){
+            updateUserList(data);
+        });
     })();
-</script>
+    </script>
 
 </div>    
 </body>

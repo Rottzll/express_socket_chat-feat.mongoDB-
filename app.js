@@ -10,7 +10,7 @@ const flash = require('connect-flash');
 
 // routes
 const indexRoute      = require("./routes/index");
-var chat = require('./routes/chat');
+const chat = require('./routes/chat');
 
 //DB
 let url = "mongodb://localhost:27017/SJ";
@@ -25,42 +25,44 @@ app.engine('html', require('ejs').renderFile);
 // 기본 path를 /public으로 설정(css, javascript 등의 파일 사용을 위해)
 app.use(express.static(__dirname + '/views'));
 
-
-var server = app.listen( PORT, function(){
-    console.log('Express listening on port', PORT);
-});
-
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.use(flash());
+const connectMongo = require('connect-mongo');
+const MongoStore = connectMongo(session);
 
-app.use(passport.initialize());
-app.use(passport.session());
-
-
-var connectMongo = require('connect-mongo');
-var MongoStore = connectMongo(session);
-
-var seesionMiddleWare = session({
-    secret:'SJ', //세션 암호화 key
+var sessionMiddleWare = session({
+    secret:'LSJ', //세션 암호화 key
     resave:false,//세션 재저장 여부
     saveUninitialized:true,
-    cookie:{maxAge:1000*60*60},//유효시간
+    cookie:{
+        maxAge:2000 * 60 * 60
+    },//유효시간
     store: new MongoStore({
         mongooseConnection: mongoose.connection,
         ttl: 14 * 24 * 60 * 60
     })
 });
-app.use(seesionMiddleWare)
+app.use(sessionMiddleWare)
 
 
-var listen = require('socket.io');
+
+var server = app.listen( PORT, function(){
+    console.log('Express listening on port', PORT);
+});
+
+const listen = require('socket.io');
 var io = listen(server);
-//socket io passport 접근하기 위한 미들웨어 적용
 io.use(function(socket, next){
     sessionMiddleWare(socket.request, socket.request.res, next);
-  });
+ });
 require('./libs/socketConnection')(io);
+
+
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(flash());
 
 app.use('/chat', chat);
 // use routes
